@@ -23,20 +23,48 @@ import { MdPersonAdd } from "react-icons/md";
 import { FaPlus, FaFileUpload } from "react-icons/fa";
 
 function FormEvent({ formik }) {
+  const [dataImage, setDataImage] = React.useState("");
+  // Create a reference to the hidden file input element
+  const hiddenFileInput = React.useRef(null);
+
+  // Programatically click the hidden file input element
+  // when the Button component is clicked
+  // eslint-disable-next-line no-unused-vars
+  const handleClick = (event) => {
+    hiddenFileInput.current.click();
+  }; // Call a function (passed as a prop from the parent component)
+  // to handle the user-selected file
+  const handleChange = async (event) => {
+    const fileUploaded = event.target.files[0];
+    if (!fileUploaded) {
+      console.log("Please select image.");
+    } else if (!fileUploaded.name.match(/\.(jpg|jpeg|png|gif)$/)) {
+      console.log("Please select valid image.");
+    } else if (fileUploaded.size > 2 * 1024 * 1024) {
+      console.log("Gagal pilih gambar!", "File gambar harus kurang dari 2MB");
+    } else {
+      const imageData = new FormData();
+      await imageData.append("picture", fileUploaded);
+      let reader = new FileReader();
+      reader.onload = (e) => {
+        setDataImage(e.target.result);
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    }
+  };
+
   return (
     <Container maxW="container.lg" p={0}>
-      <Flex direction={["column", "row"]}>
+      <HStack>
+        <FaPlus />
+        <Text fontWeight="bold" fontSize="18px">
+          Add Event
+        </Text>
+      </HStack>
+      <Flex direction={["column-reverse", "row"]} py="4">
         <Box flex="1">
           <Grid templateColumns="repeat(4, 1fr)" gap={4} p={4}>
-            <GridItem colSpan={4}>
-              <HStack>
-                <FaPlus />
-                <Text fontWeight="bold" fontSize="18px">
-                  Add Event
-                </Text>
-              </HStack>
-            </GridItem>
-            <GridItem colSpan={2}>
+            <GridItem colSpan={[4, 2]}>
               <FormControl id="note" isRequired size="md">
                 <FormLabel fontWeight="bold" fontSize="14px">
                   Title
@@ -55,7 +83,7 @@ function FormEvent({ formik }) {
                 </FormHelperText>
               </FormControl>
             </GridItem>
-            <GridItem colSpan={2}>
+            <GridItem colSpan={[4, 2]}>
               <FormControl id="note" isRequired>
                 <FormLabel fontWeight="bold" fontSize="14px">
                   Location
@@ -74,7 +102,7 @@ function FormEvent({ formik }) {
                 </FormHelperText>
               </FormControl>
             </GridItem>
-            <GridItem colSpan={2}>
+            <GridItem colSpan={[4, 2]}>
               <HStack align="start">
                 <FormControl id="note" isRequired>
                   <FormLabel fontWeight="bold" fontSize="14px">
@@ -105,7 +133,7 @@ function FormEvent({ formik }) {
                 </VStack>
               </HStack>
             </GridItem>
-            <GridItem colSpan={2}>
+            <GridItem colSpan={[4, 2]}>
               <FormControl id="note" isRequired>
                 <FormLabel fontWeight="bold" fontSize="14px">
                   Date
@@ -155,34 +183,44 @@ function FormEvent({ formik }) {
           </Grid>
         </Box>
         <Box width={["full", "md"]}>
-          {/* <Box
-            w="full"
-            h="full"
-            borderWidth="2"
-            borderColor="gray.500"
-            borderStyle="dotted"
-          >
-            <Image
-              boxSize="full"
-              objectFit="cover"
-              src="https://via.placeholder.com/728x90.png/?text=Visit+WhoIsHostingThis.com+Buyers+Guide"
-              alt="Thumbnail"
-            />
-          </Box> */}
-          <Center
-            w="full"
-            h="full"
-            borderWidth="4px"
-            borderColor="gray.500"
-            borderStyle="dotted"
-            cursor="pointer"
-          >
-            <VStack>
-              <FaFileUpload fontSize="60px" />
-              <Text>Click / Drag and Drop</Text>
-              <Text>Image</Text>
-            </VStack>
-          </Center>
+          {dataImage !== "" ? (
+            <Box
+              w="full"
+              h="full"
+              cursor="pointer"
+              onClick={handleClick}
+            >
+              <Image
+                boxSize="full"
+                objectFit="cover"
+                src={dataImage}
+                alt="Thumbnail"
+              />
+            </Box>
+          ) : (
+            <Center
+              w="full"
+              h="full"
+              borderWidth="4px"
+              borderColor="gray.500"
+              borderStyle="dotted"
+              cursor="pointer"
+              onClick={handleClick}
+            >
+              <VStack>
+                <FaFileUpload fontSize="60px" />
+
+                <Text>Click / Drag and Drop</Text>
+                <Text>Image</Text>
+              </VStack>
+            </Center>
+          )}
+          <Input
+            display="none"
+            type="file"
+            ref={hiddenFileInput}
+            onChange={handleChange}
+          />
         </Box>
       </Flex>
     </Container>
