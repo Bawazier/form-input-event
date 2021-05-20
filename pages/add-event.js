@@ -1,4 +1,5 @@
 import React from "react";
+import {useRouter} from "next/router";
 import Header from "../components/Header";
 import FormEvent from "../components/FormEvent";
 import {
@@ -20,6 +21,7 @@ import { useMutation, queryClient } from "react-query";
 import axios from "axios";
 
 function AddEvent() {
+  const router = useRouter();
   const [dataImage, setDataImage] = React.useState("");
   const [isSuccess, setIsSuccess] = React.useState(false);
   const [alertMsg, setAlertMsg] = React.useState("");
@@ -31,7 +33,7 @@ function AddEvent() {
     {
       // Always refetch after error or success:
       onSettled: () => {
-        queryClient.invalidateQueries(["event-data"]);
+        queryClient.invalidateQueries(["event-data", 1]);
       },
       onSuccess: async () => {
         await setAlertMsg("Success Add New Event");
@@ -117,7 +119,11 @@ function AddEvent() {
               >
                 Add More Event
               </Button>
-              <Button colorScheme="whatsapp" ml={3}>
+              <Button
+                colorScheme="whatsapp"
+                ml={3}
+                onClick={() => router.push("/")}
+              >
                 Back to Home
               </Button>
             </AlertDialogFooter>
