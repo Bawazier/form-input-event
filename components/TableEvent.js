@@ -24,7 +24,7 @@ function TableEvent({data}) {
         </Tr>
       </Thead>
       <Tbody>
-        {data.map((item, index) => (
+        {data?.map((item, index) => (
           <Tr key={index}>
             <Td>{index + 1}</Td>
             <Td>{item.title}</Td>

@@ -2,14 +2,16 @@
 import React from "react";
 import Header from "../components/Header";
 import TableEvent from "../components/TableEvent";
-import { Box, Container, VStack, HStack, Input, Center } from "@chakra-ui/react";
-import { FaCaretSquareLeft, FaCaretSquareRight } from "react-icons/fa";
+import { Box, Container, VStack, HStack, Input, Center, IconButton } from "@chakra-ui/react";
+import { FaCaretLeft, FaCaretRight } from "react-icons/fa";
 import { QueryClient, useQuery } from "react-query";
 import { dehydrate } from "react-query/hydration";
 import axios from "axios";
 
-const getEvent = async () => {
-  const { data } = await axios.get("http://localhost:3000/api/event");
+const getEvent = async (page = 1) => {
+  const { data } = await axios.get(
+    `http://localhost:3000/api/event?page=${page}`
+  );
 
   return data;
 };
@@ -17,20 +19,22 @@ const getEvent = async () => {
 export async function getServerSideProps() {
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery(["event-data"], () => getEvent());
+  await queryClient.prefetchQuery(["event-data", 1], () => getEvent(1));
   return {
     props: { dehydratedState: dehydrate(queryClient) },
   };
 }
 
 export default function Home() {
+  const [page, setPage] = React.useState(0);
   const option = {
     keepPreviousData: true,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     retry: 2,
   };
-  const Event = useQuery(["event-data"], () => getEvent(), option);
+  const Event = useQuery(["event-data", page], () => getEvent(page), option);
+  console.log(Event);
   return (
     <Box bg="transparent" p={0} minH="100vh">
       <Header />
@@ -41,15 +45,28 @@ export default function Home() {
             <TableEvent data={Event.data?.results} />
           </Box>
           <HStack alignSelf="center">
-            <FaCaretSquareLeft fontSize="36px" />
-            {[...Array(5)].map((item, index) => (
-              <Center boxSize="40px" color="white" cursor="pointer">
+            <IconButton
+              isDisabled={page <= 1}
+              icon={<FaCaretLeft fontSize="32px" />}
+              onClick={() => setPage(page - 1)}
+            />
+            {[...Array(Event.data?.pages)].map((item, index) => (
+              <Center
+                boxSize="40px"
+                color="white"
+                cursor="pointer"
+                onClick={() => setPage(index + 1)}
+              >
                 <Box as="span" fontWeight="bold" fontSize="lg">
                   {index + 1}
                 </Box>
               </Center>
             ))}
-            <FaCaretSquareRight fontSize="36px" />
+            <IconButton
+              isDisabled={page >= Event.data?.pages}
+              icon={<FaCaretRight fontSize="32px" />}
+              onClick={() => setPage(page + 1)}
+            />
           </HStack>
         </VStack>
       </Container>
