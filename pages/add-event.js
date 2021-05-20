@@ -1,7 +1,19 @@
 import React from "react";
 import Header from "../components/Header";
 import FormEvent from "../components/FormEvent";
-import { Container, Box } from "@chakra-ui/react";
+import {
+  Container,
+  Box,
+  Button,
+  AlertDialogCloseButton,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useMutation, queryClient } from "react-query";
@@ -9,6 +21,10 @@ import axios from "axios";
 
 function AddEvent() {
   const [dataImage, setDataImage] = React.useState("");
+  const [isSuccess, setIsSuccess] = React.useState(false);
+  const [alertMsg, setAlertMsg] = React.useState("");
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = React.useRef();
 
   const mutation = useMutation(
     (newEvent) => axios.post("/api/event", newEvent),
@@ -17,6 +33,16 @@ function AddEvent() {
       onSettled: () => {
         queryClient.invalidateQueries(["event-data"]);
       },
+      onSuccess: async () => {
+        await setAlertMsg("Success Add New Event");
+        await setIsSuccess(true);
+        onOpen();
+      },
+      // onError: async () => {
+      //   await setAlertMsg("Sorry Add New Event Failled");
+      //   await setIsSuccess(false);
+      //   onOpen();
+      // },
     }
   );
   const schema = yup.object().shape({
@@ -35,15 +61,25 @@ function AddEvent() {
       note: "",
     },
     validationSchema: schema,
-    onSubmit: (values) => {
+    onSubmit: async (values, {resetForm}) => {
       var d = new Date();
-      if(dataImage !== ""){
-        mutation.mutate({
-          ...values,
-          thumbnail: dataImage,
-          createdAt: d.toLocaleString(),
-        });
+      if (dataImage !== "") {
+        mutation.mutate(
+          {
+            ...values,
+            thumbnail: dataImage,
+            createdAt: d.toLocaleString(),
+          },
+          {
+            onSuccess: () => resetForm(),
+          });
+      } else {
+        await setAlertMsg("Please Input Image for Submit Event");
+        await setIsSuccess(false);
+        onOpen();
       }
+      
+      
     },
   });
   return (
@@ -55,6 +91,53 @@ function AddEvent() {
           setThumbnail={(image) => setDataImage(image)}
         />
       </Container>
+      <AlertDialog
+        motionPreset="slideInBottom"
+        leastDestructiveRef={cancelRef}
+        onClose={onClose}
+        isOpen={isOpen}
+        isCentered
+      >
+        <AlertDialogOverlay />
+
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            {isSuccess ? "Success" : "Failled"}
+          </AlertDialogHeader>
+          <AlertDialogCloseButton />
+          <AlertDialogBody>{alertMsg}</AlertDialogBody>
+          {isSuccess ? (
+            <AlertDialogFooter>
+              <Button
+                ref={cancelRef}
+                onClick={() => {
+                  onClose();
+                  setIsSuccess(false);
+                }}
+              >
+                Add More Event
+              </Button>
+              <Button colorScheme="whatsapp" ml={3}>
+                Back to Home
+              </Button>
+            </AlertDialogFooter>
+          ) : (
+            <AlertDialogFooter>
+              <Button
+                ref={cancelRef}
+                colorScheme="red"
+                ml={3}
+                onClick={() => {
+                  onClose();
+                  setIsSuccess(false);
+                }}
+              >
+                Try again
+              </Button>
+            </AlertDialogFooter>
+          )}
+        </AlertDialogContent>
+      </AlertDialog>
     </Box>
   );
 }
