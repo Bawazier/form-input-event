@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/jsx-key */
 import React from "react";
 import {
@@ -9,7 +10,7 @@ import {
   Td,
 } from "@chakra-ui/react";
 
-function TableEvent() {
+function TableEvent({data}) {
   return (
     <Table variant="simple" size="sm">
       <Thead>
@@ -23,20 +24,14 @@ function TableEvent() {
         </Tr>
       </Thead>
       <Tbody>
-        {[...Array(5)].map((item, index) => (
-          <Tr>
+        {data.map((item, index) => (
+          <Tr key={index}>
             <Td>{index + 1}</Td>
-            <Td>Meeting With CEO</Td>
-            <Td>Pisangan timur, jakarta</Td>
-            <Td>17 Agustus 2020</Td>
-            <Td>Rio Jainadi, Dimas P., Raditsian</Td>
-            <Td noOfLines={3}>
-              lacus sed turpis tincidunt id aliquet risus feugiat in ante metus
-              dictum at tempor commodo ullamcorper a lacus vestibulum sed arcu
-              non odio euismod lacinia at quis risus sed vulputate odio ut enim
-              blandit volutpat maecenas volutpat blandit aliquam etiam erat
-              velit scelerisque in dictum non consectetur a erat nam
-            </Td>
+            <Td>{item.title}</Td>
+            <Td>{item.location}</Td>
+            <Td>{item.date}</Td>
+            <Td>{item.participant.toString()}</Td>
+            <Td noOfLines={3}>{item.note}</Td>
           </Tr>
         ))}
       </Tbody>
