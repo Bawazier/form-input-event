@@ -20,7 +20,9 @@ export default function event(req, res) {
     // const search = req.query.search || "";
     const offset = (page - 1) * limit;
     const pages = Math.ceil(event.length / limit);
-    const eventData = getEventData().slice(offset, offset + limit);
+    const eventData = getEventData()
+      .reverse()
+      .slice(offset, offset + limit);
     
     if(event){
       res.status(200).json({
