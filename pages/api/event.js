@@ -1,5 +1,4 @@
 import fs from "fs";
-import { FaBullseye } from "react-icons/fa";
 
 export default function event(req, res) {
   if (req.method === "POST") {
@@ -16,15 +15,26 @@ export default function event(req, res) {
     });
   } else if (req.method === "GET") {
     const event = getEventData();
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    // const search = req.query.search || "";
+    const offset = (page - 1) * limit;
+    const pages = Math.ceil(event.length / limit);
+    const eventData = getEventData().slice(offset, offset + limit);
+    
     if(event){
       res.status(200).json({
         success: true,
         message: "Get All Event Successfully",
-        results: event,
+        results: eventData,
+        count: event.length - 1,
+        pages: pages,
+        currentPage: page,
+        dataPerPage: limit,
       });
     }else{
       res.status(404).json({
-        success: FaBullseye,
+        success: false,
         message: "Get All Event Not Found",
       });
     }
