@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 /* eslint-disable react/prop-types */
 import React from "react";
 import {
@@ -22,8 +23,9 @@ import {
 import { MdPersonAdd } from "react-icons/md";
 import { FaPlus, FaFileUpload } from "react-icons/fa";
 
-function FormEvent({ formik }) {
+function FormEvent({ formik, setThumbnail }) {
   const [dataImage, setDataImage] = React.useState("");
+  const [participant, setParticipant] = React.useState(1);
   // Create a reference to the hidden file input element
   const hiddenFileInput = React.useRef(null);
 
@@ -38,18 +40,20 @@ function FormEvent({ formik }) {
     const fileUploaded = event.target.files[0];
     if (!fileUploaded) {
       console.log("Please select image.");
+      setDataImage("");
     } else if (!fileUploaded.name.match(/\.(jpg|jpeg|png|gif)$/)) {
       console.log("Please select valid image.");
+      setDataImage("");
     } else if (fileUploaded.size > 2 * 1024 * 1024) {
       console.log("Gagal pilih gambar!", "File gambar harus kurang dari 2MB");
+      setDataImage("");
     } else {
-      const imageData = new FormData();
-      await imageData.append("picture", fileUploaded);
       let reader = new FileReader();
-      reader.onload = (e) => {
-        setDataImage(e.target.result);
+      reader.onload = async (e) => {
+        await setDataImage(e.target.result);
+        await setThumbnail(e.target.result);
       };
-      reader.readAsDataURL(event.target.files[0]);
+      await reader.readAsDataURL(event.target.files[0]);
     }
   };
 
@@ -103,35 +107,40 @@ function FormEvent({ formik }) {
               </FormControl>
             </GridItem>
             <GridItem colSpan={[4, 2]}>
-              <HStack align="start">
-                <FormControl id="note" isRequired>
-                  <FormLabel fontWeight="bold" fontSize="14px">
+              <FormControl id="note" isRequired>
+                <FormLabel fontWeight="bold" fontSize="14px">
                     Participant
-                  </FormLabel>
-                  <Input
-                    mb="2"
-                    id="participant"
-                    name="participant"
-                    type="text"
-                    onChange={formik.handleChange}
-                    value={formik.values.participant}
-                  />
-                  <FormHelperText color="red.500" fontSize="14px">
-                    {formik.errors.participant && formik.touched.participant
-                      ? formik.errors.participant
-                      : null}
-                  </FormHelperText>
-                </FormControl>
-                <VStack>
-                  <Box boxSize="6" display="hidden"></Box>
-                  <IconButton
-                    size="md"
-                    aria-label="Add Paticipant"
-                    icon={<MdPersonAdd />}
-                    mr="4"
-                  />
-                </VStack>
-              </HStack>
+                </FormLabel>
+                <Input
+                  mb="2"
+                  id="participant"
+                  name="participant[0]"
+                  type="text"
+                  onChange={formik.handleChange}
+                  value={formik.values.participant[0]}
+                />
+                <Input
+                  mb="2"
+                  id="participant"
+                  name="participant[1]"
+                  type="text"
+                  onChange={formik.handleChange}
+                  value={formik.values.participant[1]}
+                />
+                <Input
+                  mb="2"
+                  id="participant"
+                  name="participant[2]"
+                  type="text"
+                  onChange={formik.handleChange}
+                  value={formik.values.participant[2]}
+                />
+                <FormHelperText color="red.500" fontSize="14px">
+                  {formik.errors.participant && formik.touched.participant
+                    ? formik.errors.participant
+                    : null}
+                </FormHelperText>
+              </FormControl>
             </GridItem>
             <GridItem colSpan={[4, 2]}>
               <FormControl id="note" isRequired>
@@ -184,12 +193,7 @@ function FormEvent({ formik }) {
         </Box>
         <Box width={["full", "md"]}>
           {dataImage !== "" ? (
-            <Box
-              w="full"
-              h="full"
-              cursor="pointer"
-              onClick={handleClick}
-            >
+            <Box w="full" h="full" cursor="pointer" onClick={handleClick}>
               <Image
                 boxSize="full"
                 objectFit="cover"
