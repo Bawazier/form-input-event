@@ -2,7 +2,7 @@
 import React from "react";
 import Header from "../components/Header";
 import TableEvent from "../components/TableEvent";
-import { Box, Container, VStack, HStack, Input, Center, IconButton } from "@chakra-ui/react";
+import { Box, Container, VStack, HStack, Input, Center, IconButton, useColorModeValue } from "@chakra-ui/react";
 import { FaCaretLeft, FaCaretRight } from "react-icons/fa";
 import { QueryClient, useQuery } from "react-query";
 import { dehydrate } from "react-query/hydration";
@@ -26,7 +26,8 @@ export async function getServerSideProps() {
 }
 
 export default function Home() {
-  const [page, setPage] = React.useState(0);
+  const color = useColorModeValue("black", "white");
+  const [page, setPage] = React.useState(1);
   const option = {
     keepPreviousData: true,
     refetchOnMount: false,
@@ -53,7 +54,7 @@ export default function Home() {
             {[...Array(Event.data?.pages)].map((item, index) => (
               <Center
                 boxSize="40px"
-                color="white"
+                color={color}
                 cursor="pointer"
                 onClick={() => setPage(index + 1)}
               >

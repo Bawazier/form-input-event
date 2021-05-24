@@ -14,14 +14,19 @@ import {
   MenuList,
   MenuItem,
   IconButton,
+  useColorMode,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import {FaPlus} from "react-icons/fa";
 import { MdReorder } from "react-icons/md";
 
 function Header() {
+  const { colorMode, toggleColorMode } = useColorMode();
   const router = useRouter();
+  const bg = useColorModeValue("blue.500", "blue.200");
+  const color = useColorModeValue("white", "gray.800");
   return (
-    <Box bg="gray.500" color="white" py="4" px="8">
+    <Box bg={bg} color={color} py="4" px="8">
       <Container maxW="container.xl">
         <Flex>
           <Link href="/">
@@ -38,8 +43,8 @@ function Header() {
             fontWeight="bold"
           >
             <Button
-              colorScheme="whiteAlpha"
-              color="white"
+              colorScheme="blue"
+              color={color}
               leftIcon={<FaPlus />}
               variant="link"
               size="lg"
@@ -48,13 +53,21 @@ function Header() {
               Add Event
             </Button>
             <Button
-              colorScheme="whiteAlpha"
-              color="white"
+              colorScheme="blue"
+              color={color}
               variant="link"
               size="lg"
               onClick={() => router.push("/dashboard")}
             >
               Dashboard
+            </Button>
+            <Button
+              colorScheme="blue"
+              color={color}
+              size="sm"
+              onClick={toggleColorMode}
+            >
+              {colorMode === "light" ? "Dark" : "Light"}
             </Button>
           </HStack>
           <Menu display={["block", "none"]}>
@@ -66,8 +79,15 @@ function Header() {
               display={["flex", "none"]}
             />
             <MenuList>
-              <MenuItem onClick={() => router.push("/add-event")} icon={<FaPlus />}>Add Event</MenuItem>
-              <MenuItem onClick={() => router.push("/dashboard")}>Dashboard</MenuItem>
+              <MenuItem
+                onClick={() => router.push("/add-event")}
+                icon={<FaPlus />}
+              >
+                Add Event
+              </MenuItem>
+              <MenuItem onClick={() => router.push("/dashboard")}>
+                Dashboard
+              </MenuItem>
             </MenuList>
           </Menu>
         </Flex>

@@ -207,7 +207,7 @@ function FormEvent({ formik, setThumbnail }) {
               h="full"
               borderWidth="4px"
               borderColor="gray.500"
-              borderStyle="dotted"
+              borderStyle="dashed"
               cursor="pointer"
               onClick={handleClick}
             >

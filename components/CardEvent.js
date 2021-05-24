@@ -8,18 +8,22 @@ import {
   HStack,
   Text,
   Image,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import {MdLocationOn} from "react-icons/md";
 import {IoPersonCircle} from "react-icons/io5";
 
 function CardEvent({title, location, date, participant, note, thumbnail}) {
+  const bg = useColorModeValue("white", "gray.800");
+  const primaryColor = useColorModeValue("black", "white");
+  const secondColor = useColorModeValue("gray.800", "white");
   return (
     <Container
       maxW="340px"
-      bg="white"
-      color="black"
+      bg={bg}
+      color={primaryColor}
       borderRadius="xl"
-      boxShadow="4xl"
+      boxShadow="dark-lg"
       p="0"
       overflow="hidden"
     >
@@ -36,7 +40,7 @@ function CardEvent({title, location, date, participant, note, thumbnail}) {
           <MdLocationOn color="#E53E3E" fontSize="14px" />
           <Text
             fontSize="14px"
-            color="black"
+            color={primaryColor}
             fontWeight="black"
             casing="uppercase"
             noOfLines={1}
@@ -48,7 +52,7 @@ function CardEvent({title, location, date, participant, note, thumbnail}) {
           <Text fontSize="3xl" fontWeight="hairline" maxW="full" isTruncated>
             {title}
           </Text>
-          <Text color="gray.800" fontSize="14px" fontWeight="light">
+          <Text color={secondColor} fontSize="14px" fontWeight="light">
             {date}
           </Text>
         </VStack>
@@ -56,7 +60,7 @@ function CardEvent({title, location, date, participant, note, thumbnail}) {
           {participant?.map((item) => (
             <HStack>
               <IoPersonCircle color="#3182ce" />
-              <Text fontSize="14px" color="gray.800" maxW="20" isTruncated>
+              <Text fontSize="14px" color={secondColor} maxW="20" isTruncated>
                 {item}
               </Text>
             </HStack>
@@ -65,7 +69,7 @@ function CardEvent({title, location, date, participant, note, thumbnail}) {
         <Box>
           <VStack align="start" spacing="2px">
             <Text fontWeight="bold">Note :</Text>
-            <Text fontSize="14px" color="gray.800" noOfLines={4}>
+            <Text fontSize="14px" color={secondColor} noOfLines={4}>
               {note}
             </Text>
           </VStack>

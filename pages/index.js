@@ -26,7 +26,7 @@ export async function getServerSideProps() {
 
 export default function Home() {
   const option = {
-    keepPreviousData: true,
+    keepPreviousData: false,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     retry: 2,
