@@ -41,7 +41,7 @@ export default function Home() {
     fetchNextPage,
     hasNextPage,
   } = useInfiniteQuery(
-    "event-data",
+    ["event-data", 1],
     async ({ pageParam = 0 }) => {
       const { data } = await axios.get(`/api/event?page=${pageParam}&&limit=6`);
 
